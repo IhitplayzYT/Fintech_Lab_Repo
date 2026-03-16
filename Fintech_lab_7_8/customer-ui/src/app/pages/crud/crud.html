@@ -1,0 +1,57 @@
+<div class="container mt-4">
+
+<h2>{{entity}}</h2>
+
+<button class="btn btn-success mb-3"
+[routerLink]="['/form',entity]">
+
+Add
+
+</button>
+
+<button class="reload-btn" (click)="reloadPage()">
+ Reload
+</button>
+
+
+<table class="table table-striped">
+
+<thead>
+
+<tr>
+
+<th *ngFor="let f of fields">{{f}}</th>
+
+<th>actions</th>
+
+</tr>
+
+</thead>
+
+<tbody *ngIf="page?.content">
+
+<tr *ngFor="let r of page?.content">
+
+<td *ngFor="let f of fields">
+{{r[f]}}
+</td>
+
+<td>
+<button class="btn btn-primary btn-sm"
+[routerLink]="['/form',entity,r.id]">
+Edit
+</button>
+
+<button class="btn btn-danger btn-sm"
+(click)="delete(r.id)">
+Delete
+</button>
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>

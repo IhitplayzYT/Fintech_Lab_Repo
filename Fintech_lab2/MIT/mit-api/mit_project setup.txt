@@ -1,0 +1,6 @@
+For New Database
+--------------------
+create tablespace ts_mit logging datafile 'C:\tablespaces\ts_mit.dbf' size 3072m autoextend on next 3072 m; -- Creating the table space
+create user mit identified by mit default tablespace ts_mit; -- Creating the user lenlocal
+alter user mit quota unlimited on ts_mit; -- Altering the quota for user lenlocal
+GRANT ALL PRIVILEGES TO mit; -- Grand all permissions

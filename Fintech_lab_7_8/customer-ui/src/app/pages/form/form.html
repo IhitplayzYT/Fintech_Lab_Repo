@@ -1,0 +1,49 @@
+<div class="container mt-4">
+
+<h2>{{entity}} form</h2>
+
+
+<form (ngSubmit)="save()">
+
+<div *ngFor="let field of fields">
+
+<div *ngIf="field!='id'" class="mb-3">
+
+<label class="form-label">{{field}}</label>
+
+<!-- DATE FIELDS -->
+
+<input
+*ngIf="field.toLowerCase().includes('date') || field=='dob'"
+type="date"
+class="form-control"
+[(ngModel)]="data[field]"
+name="{{field}}">
+
+<!-- ID FIELDS -->
+
+<input
+*ngIf="field.toLowerCase().includes('id') && field!='id'"
+type="number"
+class="form-control"
+[(ngModel)]="data[field]"
+name="{{field}}">
+
+<!-- TEXT FIELDS -->
+
+<input
+*ngIf="!field.toLowerCase().includes('date') && !field.toLowerCase().includes('id') && field!='dob'"
+type="text"
+class="form-control"
+[(ngModel)]="data[field]"
+name="{{field}}">
+
+</div>
+
+</div>
+
+<button class="btn btn-success">Save</button>
+
+</form>
+
+</div>
