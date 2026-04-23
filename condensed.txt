@@ -1,0 +1,76 @@
+# FINTECH BANKING APP
+Fintech/Financial banking application with Spring Boot backend + Angular frontend + MySQL database (localhost). Insert-only paradigm with audit fields,(CRUD:C=Created,U=Updated,D=Deleted).
+- Backend: Spring Boot (Java) - REST API
+- Frontend: Angular - Simple CSS styling
+- Database: MySQL (localhost) - Dynamic schema creation via JPA
+- Build: Maven
+- Mapper: Java Mapper library (mapstruct/mapstruct annot processor/modelmapper)
+- Validation : jakarta.validation.*
+
+MVC Architecture with folder structure:
+src/main/java/com/fintech/
+├── controller/
+├── service/
+│   ├── impl/
+│   └── (interface)
+├── dto/
+├── entity/
+├── mapper/
+├── dao/
+└── config(contains simple CorsConfig.java)/
+
+Entities(ALL entities by default have getters/setters/constructor/validation):
+
+1. Input validation for all fields (context: Financial app level validation)
+2. Error handling with proper HTTP status codes
+3. CORS configuration for Angular frontend
+4. Database creation dynamically using JPA Repository
+5. Audit fields on all entities: USER_ID, WS_ID, LOCAL_TS, HOST_TS, ACPT_TS, ACPT_TS_UTC_OFST, LDBID, UUID, CRUD_VALUE
+6. DTO with only required fields (no audit fields exposed to user)
+7. Entity with all fields including audit fields
+8. Mapper: Entity ↔ DTO and vice versa conversion using Java Mapper package
+9. RESTful endpoints: GET, POST, PUT, DELETE
+10. Simple endpoint naming: /detail, /account, etc.
+11. Pagination support in all list services for frontend
+12. Response format: Clean code blocks, no comments, tight spacing
+13. Keep in your local memory all the details about the fields for all entities and dto
+### Bulk Data Generation Endpoints for each entity
+- `/files` - Accept JSON, CSV, Excel files
+- `/gen/{count}` - Generate {count} random customers generated
+- `/fill/{count}` - Generate {count} using standard arrays + random picker
+
+### Frontend
+1. Angular with simple CSS (if tokens/credits available, make it beautiful)
+2. Display DTO fields only (no audit fields)
+3. Pagination UI support
+4. Form validation matching backend
+5. Error message display
+
+## DATABASE CHARACTERISTICS
+- Insert-only paradigm: No hard deletes
+- CRUD field: C (Created), U (Updated), D (Deleted)
+- When record updated: New row inserted with U flag, old row marked and on query latest row returned
+- Audit fields on every table: USER_ID, WS_ID, LOCAL_TS, HOST_TS, ACPT_TS, ACPT_TS_UTC_OFST, LDBID, UUID, CRUD_VALUE
+
+## CODE GENERATION RULES
+1. No unnecessary comments or explanations
+2. Tight line spacing, avoid extra newlines
+3. No header formatting or decorative text
+4. For debugging: Provide LINE NUMBER + code snippet (avoid full file dumps)
+5. Use current Java package versions
+6. Response format: Simple code blocks
+7. Avoid truncating code unless it's unnecessary comments/spacing
+8. No formatting prints unless frontend-specific
+
+## RESPONSE FORMAT
+- Provide code as clean blocks with line numbers for debugging
+- Use ZIP file if possible, else separate code blocks per file
+- No comments in code blocks
+- Minimal spacing, maximum efficiency
+
+## CONSTRAINTS
+- Localhost only (MySQL, backend, frontend)
+- No external API integrations (unless specified)
+- Standard pagination (default 10-20 records per page)
+
+
