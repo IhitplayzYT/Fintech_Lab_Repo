@@ -25,7 +25,7 @@ Entities(ALL entities by default have getters/setters/constructor/validation):
 2. Error handling with proper HTTP status codes
 3. CORS configuration for Angular frontend
 4. Database creation dynamically using JPA Repository
-5. Audit fields on all entities: USER_ID, WS_ID, LOCAL_TS, HOST_TS, ACPT_TS, ACPT_TS_UTC_OFST, LDBID, UUID, CRUD_VALUE
+5. Audit fields on all entities: UID,UUID,WS_ID,P_ID,LOCAL_TS,HOST_TS, ACPT_TS, ACPT_TS_UTC_OFST, LDBID, UUID, CRUD_VALUE
 6. DTO with only required fields (no audit fields exposed to user)
 7. Entity with all fields including audit fields
 8. Mapper: Entity ↔ DTO and vice versa conversion using Java Mapper package
