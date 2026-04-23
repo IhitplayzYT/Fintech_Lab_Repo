@@ -1,0 +1,21 @@
+<div class="container mt-4">
+
+<h2>Customer System</h2>
+
+<div class="row">
+
+<div class="col-md-3 mb-3"
+*ngFor="let e of entities">
+
+<a class="card card-body text-center nav-card"
+[routerLink]="['/table',e]">
+
+{{e}}
+
+</a>
+
+</div>
+
+</div>
+
+</div>

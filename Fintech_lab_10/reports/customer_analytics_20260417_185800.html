@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Customer Analytics Report</title>
+<style>
+  :root {
+    --navy:   #0F2D4A;
+    --blue:   #1565C0;
+    --cyan:   #00B0FF;
+    --green:  #00C853;
+    --light:  #F0F4F8;
+    --border: #CFD8DC;
+    --text:   #1A1A2E;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Calibri, Arial, sans-serif;
+    background: #f5f7fa;
+    color: var(--text);
+    font-size: 14px;
+  }
+
+  /* ── Header ── */
+  .report-header {
+    background: var(--navy);
+    color: white;
+    padding: 36px 48px 28px;
+    border-bottom: 5px solid var(--cyan);
+  }
+  .report-header h1 { font-size: 2rem; letter-spacing: 1px; margin-bottom: 6px; }
+  .report-header p  { color: #90CAF9; font-size: 0.9rem; }
+
+  /* ── Navigation sidebar ── */
+  .layout { display: flex; min-height: 100vh; }
+  .sidebar {
+    width: 260px; min-width: 220px; flex-shrink: 0;
+    background: var(--navy); padding: 24px 0;
+    position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  }
+  .sidebar h2 {
+    color: var(--cyan); font-size: 0.75rem; letter-spacing: 2px;
+    text-transform: uppercase; padding: 0 20px 10px;
+  }
+  .sidebar a {
+    display: block; padding: 7px 20px; color: #B0C4DE;
+    text-decoration: none; font-size: 0.78rem;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+  }
+  .sidebar a:hover {
+    color: white; background: rgba(255,255,255,0.07);
+    border-left-color: var(--cyan);
+  }
+
+  /* ── Main content ── */
+  .main { flex: 1; padding: 32px 40px; max-width: 1200px; }
+
+  /* ── Query sections ── */
+  .query-section {
+    background: white; border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    margin-bottom: 32px; overflow: hidden;
+  }
+  .query-header {
+    background: var(--navy); color: white;
+    padding: 14px 20px; display: flex; align-items: center; gap: 12px;
+  }
+  .query-id {
+    background: var(--cyan); color: var(--navy);
+    font-size: 0.7rem; font-weight: 700; padding: 3px 8px;
+    border-radius: 4px; white-space: nowrap; letter-spacing: 0.5px;
+  }
+  .query-title { font-size: 0.95rem; font-weight: 600; }
+  .query-body { padding: 16px 20px; overflow-x: auto; }
+  .row-count {
+    font-size: 0.75rem; color: #78909C; margin-bottom: 10px;
+  }
+
+  /* ── Tables ── */
+  table {
+    border-collapse: collapse; width: 100%;
+    font-size: 0.82rem; min-width: 300px;
+  }
+  thead th {
+    background: var(--blue); color: white;
+    padding: 9px 12px; text-align: center;
+    font-weight: 600; white-space: nowrap;
+    border: 1px solid #1255A8;
+  }
+  tbody tr:nth-child(even) { background: var(--light); }
+  tbody tr:hover { background: #D9EAF7; }
+  tbody td {
+    padding: 7px 12px; border: 1px solid var(--border);
+    text-align: center;
+  }
+  tbody td:first-child { text-align: left; }
+
+  /* ── Empty state ── */
+  .no-data {
+    color: #90A4AE; font-style: italic; padding: 12px 0;
+  }
+
+  /* ── Footer ── */
+  .report-footer {
+    text-align: center; padding: 24px;
+    color: #90A4AE; font-size: 0.78rem;
+    border-top: 1px solid var(--border); margin-top: 16px;
+  }
+
+  /* ── Summary bar ── */
+  .summary-bar {
+    display: flex; gap: 20px; flex-wrap: wrap;
+    margin-bottom: 32px;
+  }
+  .kpi-card {
+    background: white; border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    padding: 18px 24px; flex: 1; min-width: 140px;
+    border-top: 4px solid var(--cyan);
+  }
+  .kpi-card .kpi-value { font-size: 1.8rem; font-weight: 700; color: var(--navy); }
+  .kpi-card .kpi-label { font-size: 0.78rem; color: #607D8B; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<div class="report-header">
+  <h1>Customer Analytics Report</h1>
+  <p>Generated: 2026-04-17 18:58:00 &nbsp;|&nbsp; Database: lab4_db &nbsp;|&nbsp;
+     45 queries executed</p>
+</div>
+
+<div class="layout">
+
+  <!-- Sidebar nav -->
+  <nav class="sidebar">
+    <h2>Queries</h2>
+    <a href="#Q01_total_customers">Q01_total_customers</a>
+<a href="#Q02_gender_distribution">Q02_gender_distribution</a>
+<a href="#Q03_customers_by_country">Q03_customers_by_country</a>
+<a href="#Q04_customers_by_status">Q04_customers_by_status</a>
+<a href="#Q05_customers_by_type">Q05_customers_by_type</a>
+<a href="#Q06_customers_by_language">Q06_customers_by_language</a>
+<a href="#Q07_gender_by_country">Q07_gender_by_country</a>
+<a href="#Q08_type_by_status">Q08_type_by_status</a>
+<a href="#Q09_new_customers_per_year">Q09_new_customers_per_year</a>
+<a href="#Q10_monthly_new_customers_3yr">Q10_monthly_new_customers_3yr</a>
+<a href="#Q11_age_distribution">Q11_age_distribution</a>
+<a href="#Q12_avg_age_by_country">Q12_avg_age_by_country</a>
+<a href="#Q13_avg_age_by_gender">Q13_avg_age_by_gender</a>
+<a href="#Q14_customers_3yr_vs_before">Q14_customers_3yr_vs_before</a>
+<a href="#Q15_identification_type_dist">Q15_identification_type_dist</a>
+<a href="#Q16_multiple_id_types">Q16_multiple_id_types</a>
+<a href="#Q17_proof_of_id_type_dist">Q17_proof_of_id_type_dist</a>
+<a href="#Q18_active_proof_of_id">Q18_active_proof_of_id</a>
+<a href="#Q19_expired_proof_of_id">Q19_expired_proof_of_id</a>
+<a href="#Q20_contact_type_dist">Q20_contact_type_dist</a>
+<a href="#Q21_active_contact_info">Q21_active_contact_info</a>
+<a href="#Q22_multiple_contact_types">Q22_multiple_contact_types</a>
+<a href="#Q23_address_type_dist">Q23_address_type_dist</a>
+<a href="#Q24_multiple_address_types">Q24_multiple_address_types</a>
+<a href="#Q25_classification_type_dist">Q25_classification_type_dist</a>
+<a href="#Q26_classification_value_breakdown">Q26_classification_value_breakdown</a>
+<a href="#Q27_name_type_dist">Q27_name_type_dist</a>
+<a href="#Q28_multiple_name_types">Q28_multiple_name_types</a>
+<a href="#Q29_gender_by_customer_type">Q29_gender_by_customer_type</a>
+<a href="#Q30_country_gender_pct">Q30_country_gender_pct</a>
+<a href="#Q31_yoy_growth_rate">Q31_yoy_growth_rate</a>
+<a href="#Q32_quarterly_registrations">Q32_quarterly_registrations</a>
+<a href="#Q33_top10_countries">Q33_top10_countries</a>
+<a href="#Q34_status_by_country">Q34_status_by_country</a>
+<a href="#Q35_language_pct_by_country">Q35_language_pct_by_country</a>
+<a href="#Q36_active_vs_inactive_by_country">Q36_active_vs_inactive_by_country</a>
+<a href="#Q37_customers_no_contact">Q37_customers_no_contact</a>
+<a href="#Q38_customers_no_address">Q38_customers_no_address</a>
+<a href="#Q39_customers_no_identification">Q39_customers_no_identification</a>
+<a href="#Q40_completeness_score_per_customer">Q40_completeness_score_per_customer</a>
+<a href="#Q41_completeness_score_distribution">Q41_completeness_score_distribution</a>
+<a href="#Q42_crud_flag_distribution">Q42_crud_flag_distribution</a>
+<a href="#Q43_monthly_address_records">Q43_monthly_address_records</a>
+<a href="#Q44_contact_expiring_90_days">Q44_contact_expiring_90_days</a>
+<a href="#Q45_proof_of_id_expiring_90_days">Q45_proof_of_id_expiring_90_days</a>
+  </nav>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- Summary KPIs -->
+    <div class="summary-bar">
+      <div class="kpi-card">
+        <div class="kpi-value">45</div>
+        <div class="kpi-label">Queries Executed</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">45</div>
+        <div class="kpi-label">Successful</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">395</div>
+        <div class="kpi-label">Total Rows Returned</div>
+      </div>
+    </div>
+
+    <!-- Query results -->
+    
+        <div class="query-section" id="Q01_total_customers">
+          <div class="query-header">
+            <span class="query-id">Q01_total_customers</span>
+            <span class="query-title">Total Number of Customers</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">1 row(s) returned</div>
+            <table><thead><tr><th>total_customers</th></tr></thead><tbody><tr><td>100</td></tr>
+</tbody></table>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q02_gender_distribution">
+          <div class="query-header">
+            <span class="query-id">Q02_gender_distribution</span>
+            <span class="query-title">Gender Distribution</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">4 row(s) returned</div>
+            <table><thead><tr><th>customer_gender</th><th>customer_count</th><th>percentage</th></tr></thead><tbody><tr><td>F</td><td>30</td><td>30.0</td></tr>
+<tr><td>M</td><td>26</td><td>26.0</td></tr>
+<tr><td>O</td><td>23</td><td>23.0</td></tr>
+<tr><td>N</td><td>21</td><td>21.0</td></tr>
+</tbody></table>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q03_customers_by_country">
+          <div class="query-header">
+            <span class="query-id">Q03_customers_by_country</span>
+            <span class="query-title">Customer Count by Country</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">10 row(s) returned</div>
+            <table><thead><tr><th>customer_country</th><th>total_customers</th></tr></thead><tbody><tr><td>DE</td><td>14</td></tr>
+<tr><td>AF</td><td>12</td></tr>
+<tr><td>GE</td><td>12</td></tr>
+<tr><td>US</td><td>12</td></tr>
+<tr><td>JP</td><td>11</td></tr>
+<tr><td>UK</td><td>11</td></tr>
+<tr><td>AU</td><td>10</td></tr>
+<tr><td>RU</td><td>6</td></tr>
+<tr><td>IN</td><td>6</td></tr>
+<tr><td>FR</td><td>6</td></tr>
+</tbody></table>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q04_customers_by_status">
+          <div class="query-header">
+            <span class="query-id">Q04_customers_by_status</span>
+            <span class="query-title">Customer Count by Status</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">4 row(s) returned</div>
+            <table><thead><tr><th>customer_status</th><th>count</th></tr></thead><tbody><tr><td>BLOCKED</td><td>32</td></tr>
+<tr><td>ACTIVE</td><td>24</td></tr>
+<tr><td>INACTIVE</td><td>23</td></tr>
+<tr><td>DEACTIVATED</td><td>21</td></tr>
+</tbody></table>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q05_customers_by_type">
+          <div class="query-header">
+            <span class="query-id">Q05_customers_by_type</span>
+            <span class="query-title">Customer Count by Type</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">6 row(s) returned</div>
+            <table><thead><tr><th>customer_type</th><th>count</th></tr></thead><tbody><tr><td>REGULAR</td><td>23</td></tr>
+<tr><td>MANAGEMENT</td><td>18</td></tr>
+<tr><td>PREMIUM</td><td>17</td></tr>
+<tr><td>STAFF</td><td>17</td></tr>
+<tr><td>BLACKLISTED</td><td>15</td></tr>
+<tr><td>VIP</td><td>10</td></tr>
+</tbody></table>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q06_customers_by_language">
+          <div class="query-header">
+            <span class="query-id">Q06_customers_by_language</span>
+            <span class="query-title">Customer Count by Language Preference</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">8 row(s) returned</div>
+            <table><thead><tr><th>customer_lang</th><th>count</th></tr></thead><tbody><tr><td>DE</td><td>21</td></tr>
+<tr><td>ES</td><td>15</td></tr>
+<tr><td>HI</td><td>15</td></tr>
+<tr><td>KA</td><td>13</td></tr>
+<tr><td>EN</td><td>12</td></tr>
+<tr><td>FR</td><td>9</td></tr>
+<tr><td>TE</td><td>8</td></tr>
+<tr><td>TU</td><td>7</td></tr>
+</tbody></table>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q07_gender_by_country">
+          <div class="query-header">
+            <span class="query-id">Q07_gender_by_country</span>
+            <span class="query-title">Gender Distribution by Country</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">38 row(s) returned</div>
+            <table><thead><tr><th>customer_country</th><th>customer_gender</th><th>count</th></tr></thead><tbody><tr><td>AF</td><td>O</td><td>5</td></tr>
+<tr><td>AF</td><td>N</td><td>3</td></tr>
+<tr><td>AF</td><td>F</td><td>2</td></tr>
+<tr><td>AF</td><td>M</td><td>2</td></tr>
+<tr><td>AU</td><td>M</td><td>4</td></tr>
+<tr><td>AU</td><td>O</td><td>3</td></tr>
+<tr><td>AU</td><td>F</td><td>2</td></tr>
+<tr><td>AU</td><td>N</td><td>1</td></tr>
+<tr><td>DE</td><td>F</td><td>5</td></tr>
+<tr><td>DE</td><td>M</td><td>3</td></tr>
+<tr><td>DE</td><td>O</td><td>3</td></tr>
+<tr><td>DE</td><td>N</td><td>3</td></tr>
+<tr><td>FR</td><td>F</td><td>2</td></tr>
+<tr><td>FR</td><td>N</td><td>2</td></tr>
+<tr><td>FR</td><td>O</td><td>1</td></tr>
+<tr><td>FR</td><td>M</td><td>1</td></tr>
+<tr><td>GE</td><td>M</td><td>5</td></tr>
+<tr><td>GE</td><td>O</td><td>4</td></tr>
+<tr><td>GE</td><td>N</td><td>2</td></tr>
+<tr><td>GE</td><td>F</td><td>1</td></tr>
+<tr><td>IN</td><td>F</td><td>3</td></tr>
+<tr><td>IN</td><td>M</td><td>2</td></tr>
+<tr><td>IN</td><td>N</td><td>1</td></tr>
+<tr><td>JP</td><td>N</td><td>3</td></tr>
+<tr><td>JP</td><td>O</td><td>3</td></tr>
+<tr><td>JP</td><td>M</td><td>3</td></tr>
+<tr><td>JP</td><td>F</td><td>2</td></tr>
+<tr><td>RU</td><td>N</td><td>3</td></tr>
+<tr><td>RU</td><td>M</td><td>2</td></tr>
+<tr><td>RU</td><td>F</td><td>1</td></tr>
+<tr><td>UK</td><td>F</td><td>7</td></tr>
+<tr><td>UK</td><td>M</td><td>2</td></tr>
+<tr><td>UK</td><td>N</td><td>1</td></tr>
+<tr><td>UK</td><td>O</td><td>1</td></tr>
+<tr><td>US</td><td>F</td><td>5</td></tr>
+<tr><td>US</td><td>O</td><td>3</td></tr>
+<tr><td>US</td><td>M</td><td>2</td></tr>
+<tr><td>US</td><td>N</td><td>2</td></tr>
+</tbody></table>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q08_type_by_status">
+          <div class="query-header">
+            <span class="query-id">Q08_type_by_status</span>
+            <span class="query-title">Customer Count by Type and Status</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">23 row(s) returned</div>
+            <table><thead><tr><th>customer_type</th><th>customer_status</th><th>count</th></tr></thead><tbody><tr><td>BLACKLISTED</td><td>BLOCKED</td><td>6</td></tr>
+<tr><td>BLACKLISTED</td><td>ACTIVE</td><td>5</td></tr>
+<tr><td>BLACKLISTED</td><td>INACTIVE</td><td>2</td></tr>
+<tr><td>BLACKLISTED</td><td>DEACTIVATED</td><td>2</td></tr>
+<tr><td>MANAGEMENT</td><td>INACTIVE</td><td>6</td></tr>
+<tr><td>MANAGEMENT</td><td>DEACTIVATED</td><td>5</td></tr>
+<tr><td>MANAGEMENT</td><td>ACTIVE</td><td>5</td></tr>
+<tr><td>MANAGEMENT</td><td>BLOCKED</td><td>2</td></tr>
+<tr><td>PREMIUM</td><td>BLOCKED</td><td>7</td></tr>
+<tr><td>PREMIUM</td><td>DEACTIVATED</td><td>4</td></tr>
+<tr><td>PREMIUM</td><td>INACTIVE</td><td>4</td></tr>
+<tr><td>PREMIUM</td><td>ACTIVE</td><td>2</td></tr>
+<tr><td>REGULAR</td><td>ACTIVE</td><td>8</td></tr>
+<tr><td>REGULAR</td><td>INACTIVE</td><td>6</td></tr>
+<tr><td>REGULAR</td><td>DEACTIVATED</td><td>5</td></tr>
+<tr><td>REGULAR</td><td>BLOCKED</td><td>4</td></tr>
+<tr><td>STAFF</td><td>BLOCKED</td><td>8</td></tr>
+<tr><td>STAFF</td><td>INACTIVE</td><td>5</td></tr>
+<tr><td>STAFF</td><td>DEACTIVATED</td><td>2</td></tr>
+<tr><td>STAFF</td><td>ACTIVE</td><td>2</td></tr>
+<tr><td>VIP</td><td>BLOCKED</td><td>5</td></tr>
+<tr><td>VIP</td><td>DEACTIVATED</td><td>3</td></tr>
+<tr><td>VIP</td><td>ACTIVE</td><td>2</td></tr>
+</tbody></table>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q09_new_customers_per_year">
+          <div class="query-header">
+            <span class="query-id">Q09_new_customers_per_year</span>
+            <span class="query-title">New Customers Registered Each Year</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">1 row(s) returned</div>
+            <table><thead><tr><th>year</th><th>new_customers</th></tr></thead><tbody><tr><td>2026</td><td>100</td></tr>
+</tbody></table>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q10_monthly_new_customers_3yr">
+          <div class="query-header">
+            <span class="query-id">Q10_monthly_new_customers_3yr</span>
+            <span class="query-title">Monthly New Customers (Last 3 Years)</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">1 row(s) returned</div>
+            <table><thead><tr><th>year</th><th>month</th><th>new_customers</th></tr></thead><tbody><tr><td>2026</td><td>4</td><td>100</td></tr>
+</tbody></table>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q11_age_distribution">
+          <div class="query-header">
+            <span class="query-id">Q11_age_distribution</span>
+            <span class="query-title">Customer Age Distribution (Brackets)</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">4 row(s) returned</div>
+            <table><thead><tr><th>age_group</th><th>count</th></tr></thead><tbody><tr><td>18-25</td><td>15</td></tr>
+<tr><td>26-35</td><td>28</td></tr>
+<tr><td>36-45</td><td>30</td></tr>
+<tr><td>46-60</td><td>27</td></tr>
+</tbody></table>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q12_avg_age_by_country">
+          <div class="query-header">
+            <span class="query-id">Q12_avg_age_by_country</span>
+            <span class="query-title">Average Customer Age by Country</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">10 row(s) returned</div>
+            <table><thead><tr><th>customer_country</th><th>avg_age</th></tr></thead><tbody><tr><td>JP</td><td>41.9</td></tr>
+<tr><td>UK</td><td>41.0</td></tr>
+<tr><td>AU</td><td>40.4</td></tr>
+<tr><td>RU</td><td>40.2</td></tr>
+<tr><td>FR</td><td>38.5</td></tr>
+<tr><td>IN</td><td>38.0</td></tr>
+<tr><td>GE</td><td>35.9</td></tr>
+<tr><td>US</td><td>35.8</td></tr>
+<tr><td>DE</td><td>35.1</td></tr>
+<tr><td>AF</td><td>34.1</td></tr>
+</tbody></table>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q13_avg_age_by_gender">
+          <div class="query-header">
+            <span class="query-id">Q13_avg_age_by_gender</span>
+            <span class="query-title">Average Customer Age by Gender</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">4 row(s) returned</div>
+            <table><thead><tr><th>customer_gender</th><th>avg_age</th></tr></thead><tbody><tr><td>F</td><td>39.6</td></tr>
+<tr><td>M</td><td>40.4</td></tr>
+<tr><td>N</td><td>33.7</td></tr>
+<tr><td>O</td><td>36.1</td></tr>
+</tbody></table>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q14_customers_3yr_vs_before">
+          <div class="query-header">
+            <span class="query-id">Q14_customers_3yr_vs_before</span>
+            <span class="query-title">Customers Added: Last 3 Years vs Before</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">1 row(s) returned</div>
+            <table><thead><tr><th>period</th><th>count</th></tr></thead><tbody><tr><td>Last 3 Years</td><td>100</td></tr>
+</tbody></table>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q15_identification_type_dist">
+          <div class="query-header">
+            <span class="query-id">Q15_identification_type_dist</span>
+            <span class="query-title">Customer Identification Type Distribution</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">0 row(s) returned</div>
+            <p class="no-data">No data returned for this query.</p>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q16_multiple_id_types">
+          <div class="query-header">
+            <span class="query-id">Q16_multiple_id_types</span>
+            <span class="query-title">Customers with Multiple Identification Types</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">0 row(s) returned</div>
+            <p class="no-data">No data returned for this query.</p>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q17_proof_of_id_type_dist">
+          <div class="query-header">
+            <span class="query-id">Q17_proof_of_id_type_dist</span>
+            <span class="query-title">Proof of ID Document Type Distribution</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">0 row(s) returned</div>
+            <p class="no-data">No data returned for this query.</p>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q18_active_proof_of_id">
+          <div class="query-header">
+            <span class="query-id">Q18_active_proof_of_id</span>
+            <span class="query-title">Currently Active Proof of ID by Type</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">0 row(s) returned</div>
+            <p class="no-data">No data returned for this query.</p>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q19_expired_proof_of_id">
+          <div class="query-header">
+            <span class="query-id">Q19_expired_proof_of_id</span>
+            <span class="query-title">Customers with Expired Proof of ID</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">1 row(s) returned</div>
+            <table><thead><tr><th>customers_with_expired_id</th></tr></thead><tbody><tr><td>0</td></tr>
+</tbody></table>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q20_contact_type_dist">
+          <div class="query-header">
+            <span class="query-id">Q20_contact_type_dist</span>
+            <span class="query-title">Contact Type Distribution</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">0 row(s) returned</div>
+            <p class="no-data">No data returned for this query.</p>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q21_active_contact_info">
+          <div class="query-header">
+            <span class="query-id">Q21_active_contact_info</span>
+            <span class="query-title">Active Contact Information by Type</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">0 row(s) returned</div>
+            <p class="no-data">No data returned for this query.</p>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q22_multiple_contact_types">
+          <div class="query-header">
+            <span class="query-id">Q22_multiple_contact_types</span>
+            <span class="query-title">Customers with Multiple Contact Types</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">0 row(s) returned</div>
+            <p class="no-data">No data returned for this query.</p>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q23_address_type_dist">
+          <div class="query-header">
+            <span class="query-id">Q23_address_type_dist</span>
+            <span class="query-title">Address Type Distribution</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">0 row(s) returned</div>
+            <p class="no-data">No data returned for this query.</p>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q24_multiple_address_types">
+          <div class="query-header">
+            <span class="query-id">Q24_multiple_address_types</span>
+            <span class="query-title">Customers with Multiple Address Types</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">0 row(s) returned</div>
+            <p class="no-data">No data returned for this query.</p>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q25_classification_type_dist">
+          <div class="query-header">
+            <span class="query-id">Q25_classification_type_dist</span>
+            <span class="query-title">Classification Type Distribution</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">0 row(s) returned</div>
+            <p class="no-data">No data returned for this query.</p>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q26_classification_value_breakdown">
+          <div class="query-header">
+            <span class="query-id">Q26_classification_value_breakdown</span>
+            <span class="query-title">Classification Value Breakdown per Type</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">0 row(s) returned</div>
+            <p class="no-data">No data returned for this query.</p>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q27_name_type_dist">
+          <div class="query-header">
+            <span class="query-id">Q27_name_type_dist</span>
+            <span class="query-title">Customer Name Type Distribution</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">0 row(s) returned</div>
+            <p class="no-data">No data returned for this query.</p>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q28_multiple_name_types">
+          <div class="query-header">
+            <span class="query-id">Q28_multiple_name_types</span>
+            <span class="query-title">Customers with Multiple Name Types</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">0 row(s) returned</div>
+            <p class="no-data">No data returned for this query.</p>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q29_gender_by_customer_type">
+          <div class="query-header">
+            <span class="query-id">Q29_gender_by_customer_type</span>
+            <span class="query-title">Gender Ratio per Customer Type</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">24 row(s) returned</div>
+            <table><thead><tr><th>customer_type</th><th>customer_gender</th><th>count</th></tr></thead><tbody><tr><td>BLACKLISTED</td><td>N</td><td>5</td></tr>
+<tr><td>BLACKLISTED</td><td>F</td><td>5</td></tr>
+<tr><td>BLACKLISTED</td><td>M</td><td>3</td></tr>
+<tr><td>BLACKLISTED</td><td>O</td><td>2</td></tr>
+<tr><td>MANAGEMENT</td><td>F</td><td>6</td></tr>
+<tr><td>MANAGEMENT</td><td>M</td><td>6</td></tr>
+<tr><td>MANAGEMENT</td><td>O</td><td>5</td></tr>
+<tr><td>MANAGEMENT</td><td>N</td><td>1</td></tr>
+<tr><td>PREMIUM</td><td>O</td><td>5</td></tr>
+<tr><td>PREMIUM</td><td>F</td><td>5</td></tr>
+<tr><td>PREMIUM</td><td>M</td><td>4</td></tr>
+<tr><td>PREMIUM</td><td>N</td><td>3</td></tr>
+<tr><td>REGULAR</td><td>M</td><td>7</td></tr>
+<tr><td>REGULAR</td><td>F</td><td>6</td></tr>
+<tr><td>REGULAR</td><td>N</td><td>5</td></tr>
+<tr><td>REGULAR</td><td>O</td><td>5</td></tr>
+<tr><td>STAFF</td><td>N</td><td>6</td></tr>
+<tr><td>STAFF</td><td>F</td><td>5</td></tr>
+<tr><td>STAFF</td><td>O</td><td>4</td></tr>
+<tr><td>STAFF</td><td>M</td><td>2</td></tr>
+<tr><td>VIP</td><td>M</td><td>4</td></tr>
+<tr><td>VIP</td><td>F</td><td>3</td></tr>
+<tr><td>VIP</td><td>O</td><td>2</td></tr>
+<tr><td>VIP</td><td>N</td><td>1</td></tr>
+</tbody></table>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q30_country_gender_pct">
+          <div class="query-header">
+            <span class="query-id">Q30_country_gender_pct</span>
+            <span class="query-title">Country-wise Gender Breakdown with Percentage</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">38 row(s) returned</div>
+            <table><thead><tr><th>customer_country</th><th>customer_gender</th><th>count</th><th>pct_within_country</th></tr></thead><tbody><tr><td>AF</td><td>O</td><td>5</td><td>41.67</td></tr>
+<tr><td>AF</td><td>N</td><td>3</td><td>25.0</td></tr>
+<tr><td>AF</td><td>F</td><td>2</td><td>16.67</td></tr>
+<tr><td>AF</td><td>M</td><td>2</td><td>16.67</td></tr>
+<tr><td>AU</td><td>M</td><td>4</td><td>40.0</td></tr>
+<tr><td>AU</td><td>O</td><td>3</td><td>30.0</td></tr>
+<tr><td>AU</td><td>F</td><td>2</td><td>20.0</td></tr>
+<tr><td>AU</td><td>N</td><td>1</td><td>10.0</td></tr>
+<tr><td>DE</td><td>F</td><td>5</td><td>35.71</td></tr>
+<tr><td>DE</td><td>N</td><td>3</td><td>21.43</td></tr>
+<tr><td>DE</td><td>M</td><td>3</td><td>21.43</td></tr>
+<tr><td>DE</td><td>O</td><td>3</td><td>21.43</td></tr>
+<tr><td>FR</td><td>N</td><td>2</td><td>33.33</td></tr>
+<tr><td>FR</td><td>F</td><td>2</td><td>33.33</td></tr>
+<tr><td>FR</td><td>M</td><td>1</td><td>16.67</td></tr>
+<tr><td>FR</td><td>O</td><td>1</td><td>16.67</td></tr>
+<tr><td>GE</td><td>M</td><td>5</td><td>41.67</td></tr>
+<tr><td>GE</td><td>O</td><td>4</td><td>33.33</td></tr>
+<tr><td>GE</td><td>N</td><td>2</td><td>16.67</td></tr>
+<tr><td>GE</td><td>F</td><td>1</td><td>8.33</td></tr>
+<tr><td>IN</td><td>F</td><td>3</td><td>50.0</td></tr>
+<tr><td>IN</td><td>M</td><td>2</td><td>33.33</td></tr>
+<tr><td>IN</td><td>N</td><td>1</td><td>16.67</td></tr>
+<tr><td>JP</td><td>N</td><td>3</td><td>27.27</td></tr>
+<tr><td>JP</td><td>M</td><td>3</td><td>27.27</td></tr>
+<tr><td>JP</td><td>O</td><td>3</td><td>27.27</td></tr>
+<tr><td>JP</td><td>F</td><td>2</td><td>18.18</td></tr>
+<tr><td>RU</td><td>N</td><td>3</td><td>50.0</td></tr>
+<tr><td>RU</td><td>M</td><td>2</td><td>33.33</td></tr>
+<tr><td>RU</td><td>F</td><td>1</td><td>16.67</td></tr>
+<tr><td>UK</td><td>F</td><td>7</td><td>63.64</td></tr>
+<tr><td>UK</td><td>M</td><td>2</td><td>18.18</td></tr>
+<tr><td>UK</td><td>O</td><td>1</td><td>9.09</td></tr>
+<tr><td>UK</td><td>N</td><td>1</td><td>9.09</td></tr>
+<tr><td>US</td><td>F</td><td>5</td><td>41.67</td></tr>
+<tr><td>US</td><td>O</td><td>3</td><td>25.0</td></tr>
+<tr><td>US</td><td>N</td><td>2</td><td>16.67</td></tr>
+<tr><td>US</td><td>M</td><td>2</td><td>16.67</td></tr>
+</tbody></table>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q31_yoy_growth_rate">
+          <div class="query-header">
+            <span class="query-id">Q31_yoy_growth_rate</span>
+            <span class="query-title">Year-over-Year Customer Growth Rate (Last 3 Years)</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">1 row(s) returned</div>
+            <table><thead><tr><th>year</th><th>new_customers</th><th>prev_year_count</th><th>growth_pct</th></tr></thead><tbody><tr><td>2026</td><td>100</td><td>None</td><td>None</td></tr>
+</tbody></table>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q32_quarterly_registrations">
+          <div class="query-header">
+            <span class="query-id">Q32_quarterly_registrations</span>
+            <span class="query-title">New Customers per Quarter (Last 3 Years)</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">1 row(s) returned</div>
+            <table><thead><tr><th>year</th><th>quarter</th><th>new_customers</th></tr></thead><tbody><tr><td>2026</td><td>2</td><td>100</td></tr>
+</tbody></table>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q33_top10_countries">
+          <div class="query-header">
+            <span class="query-id">Q33_top10_countries</span>
+            <span class="query-title">Top 10 Countries by Customer Count</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">10 row(s) returned</div>
+            <table><thead><tr><th>customer_country</th><th>total</th></tr></thead><tbody><tr><td>DE</td><td>14</td></tr>
+<tr><td>AF</td><td>12</td></tr>
+<tr><td>GE</td><td>12</td></tr>
+<tr><td>US</td><td>12</td></tr>
+<tr><td>JP</td><td>11</td></tr>
+<tr><td>UK</td><td>11</td></tr>
+<tr><td>AU</td><td>10</td></tr>
+<tr><td>RU</td><td>6</td></tr>
+<tr><td>IN</td><td>6</td></tr>
+<tr><td>FR</td><td>6</td></tr>
+</tbody></table>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q34_status_by_country">
+          <div class="query-header">
+            <span class="query-id">Q34_status_by_country</span>
+            <span class="query-title">Customer Status by Country</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">35 row(s) returned</div>
+            <table><thead><tr><th>customer_country</th><th>customer_status</th><th>count</th></tr></thead><tbody><tr><td>AF</td><td>BLOCKED</td><td>5</td></tr>
+<tr><td>AF</td><td>ACTIVE</td><td>5</td></tr>
+<tr><td>AF</td><td>INACTIVE</td><td>1</td></tr>
+<tr><td>AF</td><td>DEACTIVATED</td><td>1</td></tr>
+<tr><td>AU</td><td>INACTIVE</td><td>3</td></tr>
+<tr><td>AU</td><td>BLOCKED</td><td>3</td></tr>
+<tr><td>AU</td><td>DEACTIVATED</td><td>2</td></tr>
+<tr><td>AU</td><td>ACTIVE</td><td>2</td></tr>
+<tr><td>DE</td><td>INACTIVE</td><td>6</td></tr>
+<tr><td>DE</td><td>ACTIVE</td><td>3</td></tr>
+<tr><td>DE</td><td>DEACTIVATED</td><td>3</td></tr>
+<tr><td>DE</td><td>BLOCKED</td><td>2</td></tr>
+<tr><td>FR</td><td>ACTIVE</td><td>3</td></tr>
+<tr><td>FR</td><td>BLOCKED</td><td>2</td></tr>
+<tr><td>FR</td><td>INACTIVE</td><td>1</td></tr>
+<tr><td>GE</td><td>BLOCKED</td><td>7</td></tr>
+<tr><td>GE</td><td>INACTIVE</td><td>2</td></tr>
+<tr><td>GE</td><td>DEACTIVATED</td><td>2</td></tr>
+<tr><td>GE</td><td>ACTIVE</td><td>1</td></tr>
+<tr><td>IN</td><td>ACTIVE</td><td>3</td></tr>
+<tr><td>IN</td><td>BLOCKED</td><td>2</td></tr>
+<tr><td>IN</td><td>DEACTIVATED</td><td>1</td></tr>
+<tr><td>JP</td><td>DEACTIVATED</td><td>5</td></tr>
+<tr><td>JP</td><td>BLOCKED</td><td>4</td></tr>
+<tr><td>JP</td><td>INACTIVE</td><td>2</td></tr>
+<tr><td>RU</td><td>ACTIVE</td><td>3</td></tr>
+<tr><td>RU</td><td>BLOCKED</td><td>2</td></tr>
+<tr><td>RU</td><td>DEACTIVATED</td><td>1</td></tr>
+<tr><td>UK</td><td>INACTIVE</td><td>6</td></tr>
+<tr><td>UK</td><td>DEACTIVATED</td><td>3</td></tr>
+<tr><td>UK</td><td>BLOCKED</td><td>2</td></tr>
+<tr><td>US</td><td>ACTIVE</td><td>4</td></tr>
+<tr><td>US</td><td>BLOCKED</td><td>3</td></tr>
+<tr><td>US</td><td>DEACTIVATED</td><td>3</td></tr>
+<tr><td>US</td><td>INACTIVE</td><td>2</td></tr>
+</tbody></table>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q35_language_pct_by_country">
+          <div class="query-header">
+            <span class="query-id">Q35_language_pct_by_country</span>
+            <span class="query-title">Language Preference Percentage per Country</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">55 row(s) returned</div>
+            <table><thead><tr><th>customer_country</th><th>customer_lang</th><th>count</th><th>pct_within_country</th></tr></thead><tbody><tr><td>AF</td><td>HI</td><td>4</td><td>33.33</td></tr>
+<tr><td>AF</td><td>ES</td><td>2</td><td>16.67</td></tr>
+<tr><td>AF</td><td>DE</td><td>2</td><td>16.67</td></tr>
+<tr><td>AF</td><td>KA</td><td>2</td><td>16.67</td></tr>
+<tr><td>AF</td><td>FR</td><td>1</td><td>8.33</td></tr>
+<tr><td>AF</td><td>TE</td><td>1</td><td>8.33</td></tr>
+<tr><td>AU</td><td>DE</td><td>4</td><td>40.0</td></tr>
+<tr><td>AU</td><td>KA</td><td>2</td><td>20.0</td></tr>
+<tr><td>AU</td><td>ES</td><td>1</td><td>10.0</td></tr>
+<tr><td>AU</td><td>HI</td><td>1</td><td>10.0</td></tr>
+<tr><td>AU</td><td>FR</td><td>1</td><td>10.0</td></tr>
+<tr><td>AU</td><td>EN</td><td>1</td><td>10.0</td></tr>
+<tr><td>DE</td><td>HI</td><td>3</td><td>21.43</td></tr>
+<tr><td>DE</td><td>TU</td><td>3</td><td>21.43</td></tr>
+<tr><td>DE</td><td>EN</td><td>2</td><td>14.29</td></tr>
+<tr><td>DE</td><td>DE</td><td>2</td><td>14.29</td></tr>
+<tr><td>DE</td><td>KA</td><td>2</td><td>14.29</td></tr>
+<tr><td>DE</td><td>FR</td><td>1</td><td>7.14</td></tr>
+<tr><td>DE</td><td>TE</td><td>1</td><td>7.14</td></tr>
+<tr><td>FR</td><td>KA</td><td>2</td><td>33.33</td></tr>
+<tr><td>FR</td><td>EN</td><td>1</td><td>16.67</td></tr>
+<tr><td>FR</td><td>TU</td><td>1</td><td>16.67</td></tr>
+<tr><td>FR</td><td>TE</td><td>1</td><td>16.67</td></tr>
+<tr><td>FR</td><td>ES</td><td>1</td><td>16.67</td></tr>
+<tr><td>GE</td><td>ES</td><td>4</td><td>33.33</td></tr>
+<tr><td>GE</td><td>EN</td><td>2</td><td>16.67</td></tr>
+<tr><td>GE</td><td>FR</td><td>2</td><td>16.67</td></tr>
+<tr><td>GE</td><td>KA</td><td>1</td><td>8.33</td></tr>
+<tr><td>GE</td><td>DE</td><td>1</td><td>8.33</td></tr>
+<tr><td>GE</td><td>TE</td><td>1</td><td>8.33</td></tr>
+<tr><td>GE</td><td>TU</td><td>1</td><td>8.33</td></tr>
+<tr><td>IN</td><td>DE</td><td>3</td><td>50.0</td></tr>
+<tr><td>IN</td><td>ES</td><td>2</td><td>33.33</td></tr>
+<tr><td>IN</td><td>TE</td><td>1</td><td>16.67</td></tr>
+<tr><td>JP</td><td>DE</td><td>3</td><td>27.27</td></tr>
+<tr><td>JP</td><td>HI</td><td>3</td><td>27.27</td></tr>
+<tr><td>JP</td><td>EN</td><td>2</td><td>18.18</td></tr>
+<tr><td>JP</td><td>TU</td><td>2</td><td>18.18</td></tr>
+<tr><td>JP</td><td>ES</td><td>1</td><td>9.09</td></tr>
+<tr><td>RU</td><td>KA</td><td>2</td><td>33.33</td></tr>
+<tr><td>RU</td><td>EN</td><td>2</td><td>33.33</td></tr>
+<tr><td>RU</td><td>ES</td><td>1</td><td>16.67</td></tr>
+<tr><td>RU</td><td>DE</td><td>1</td><td>16.67</td></tr>
+<tr><td>UK</td><td>FR</td><td>4</td><td>36.36</td></tr>
+<tr><td>UK</td><td>ES</td><td>2</td><td>18.18</td></tr>
+<tr><td>UK</td><td>DE</td><td>2</td><td>18.18</td></tr>
+<tr><td>UK</td><td>HI</td><td>1</td><td>9.09</td></tr>
+<tr><td>UK</td><td>TE</td><td>1</td><td>9.09</td></tr>
+<tr><td>UK</td><td>KA</td><td>1</td><td>9.09</td></tr>
+<tr><td>US</td><td>DE</td><td>3</td><td>25.0</td></tr>
+<tr><td>US</td><td>HI</td><td>3</td><td>25.0</td></tr>
+<tr><td>US</td><td>EN</td><td>2</td><td>16.67</td></tr>
+<tr><td>US</td><td>TE</td><td>2</td><td>16.67</td></tr>
+<tr><td>US</td><td>KA</td><td>1</td><td>8.33</td></tr>
+<tr><td>US</td><td>ES</td><td>1</td><td>8.33</td></tr>
+</tbody></table>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q36_active_vs_inactive_by_country">
+          <div class="query-header">
+            <span class="query-id">Q36_active_vs_inactive_by_country</span>
+            <span class="query-title">Active vs Inactive Customers per Country</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">10 row(s) returned</div>
+            <table><thead><tr><th>customer_country</th><th>active</th><th>inactive</th><th>total</th></tr></thead><tbody><tr><td>DE</td><td>3.0</td><td>11.0</td><td>14</td></tr>
+<tr><td>US</td><td>4.0</td><td>8.0</td><td>12</td></tr>
+<tr><td>AF</td><td>5.0</td><td>7.0</td><td>12</td></tr>
+<tr><td>GE</td><td>1.0</td><td>11.0</td><td>12</td></tr>
+<tr><td>JP</td><td>0.0</td><td>11.0</td><td>11</td></tr>
+<tr><td>UK</td><td>0.0</td><td>11.0</td><td>11</td></tr>
+<tr><td>AU</td><td>2.0</td><td>8.0</td><td>10</td></tr>
+<tr><td>IN</td><td>3.0</td><td>3.0</td><td>6</td></tr>
+<tr><td>FR</td><td>3.0</td><td>3.0</td><td>6</td></tr>
+<tr><td>RU</td><td>3.0</td><td>3.0</td><td>6</td></tr>
+</tbody></table>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q37_customers_no_contact">
+          <div class="query-header">
+            <span class="query-id">Q37_customers_no_contact</span>
+            <span class="query-title">Customers with No Contact Information</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">1 row(s) returned</div>
+            <table><thead><tr><th>customers_without_contact</th></tr></thead><tbody><tr><td>100</td></tr>
+</tbody></table>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q38_customers_no_address">
+          <div class="query-header">
+            <span class="query-id">Q38_customers_no_address</span>
+            <span class="query-title">Customers with No Address on Record</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">1 row(s) returned</div>
+            <table><thead><tr><th>customers_without_address</th></tr></thead><tbody><tr><td>100</td></tr>
+</tbody></table>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q39_customers_no_identification">
+          <div class="query-header">
+            <span class="query-id">Q39_customers_no_identification</span>
+            <span class="query-title">Customers with No Identification Document</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">1 row(s) returned</div>
+            <table><thead><tr><th>customers_without_identification</th></tr></thead><tbody><tr><td>100</td></tr>
+</tbody></table>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q40_completeness_score_per_customer">
+          <div class="query-header">
+            <span class="query-id">Q40_completeness_score_per_customer</span>
+            <span class="query-title">Profile Completeness Score per Customer</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">100 row(s) returned</div>
+            <table><thead><tr><th>customer_identifier</th><th>customer_country</th><th>customer_gender</th><th>customer_status</th><th>completeness_score</th></tr></thead><tbody><tr><td>48</td><td>JP</td><td>O</td><td>DEACTIVATED</td><td>0</td></tr>
+<tr><td>32</td><td>AF</td><td>F</td><td>BLOCKED</td><td>0</td></tr>
+<tr><td>96</td><td>DE</td><td>M</td><td>ACTIVE</td><td>0</td></tr>
+<tr><td>16</td><td>US</td><td>N</td><td>DEACTIVATED</td><td>0</td></tr>
+<tr><td>80</td><td>FR</td><td>N</td><td>INACTIVE</td><td>0</td></tr>
+<tr><td>64</td><td>GE</td><td>O</td><td>BLOCKED</td><td>0</td></tr>
+<tr><td>1</td><td>JP</td><td>N</td><td>BLOCKED</td><td>0</td></tr>
+<tr><td>65</td><td>AU</td><td>M</td><td>DEACTIVATED</td><td>0</td></tr>
+<tr><td>49</td><td>DE</td><td>F</td><td>INACTIVE</td><td>0</td></tr>
+<tr><td>33</td><td>JP</td><td>F</td><td>INACTIVE</td><td>0</td></tr>
+<tr><td>97</td><td>GE</td><td>O</td><td>BLOCKED</td><td>0</td></tr>
+<tr><td>17</td><td>DE</td><td>F</td><td>INACTIVE</td><td>0</td></tr>
+<tr><td>81</td><td>DE</td><td>F</td><td>INACTIVE</td><td>0</td></tr>
+<tr><td>2</td><td>DE</td><td>M</td><td>INACTIVE</td><td>0</td></tr>
+<tr><td>66</td><td>FR</td><td>M</td><td>ACTIVE</td><td>0</td></tr>
+<tr><td>50</td><td>US</td><td>M</td><td>ACTIVE</td><td>0</td></tr>
+<tr><td>34</td><td>UK</td><td>F</td><td>BLOCKED</td><td>0</td></tr>
+<tr><td>98</td><td>DE</td><td>N</td><td>INACTIVE</td><td>0</td></tr>
+<tr><td>18</td><td>AU</td><td>O</td><td>ACTIVE</td><td>0</td></tr>
+<tr><td>82</td><td>RU</td><td>F</td><td>ACTIVE</td><td>0</td></tr>
+<tr><td>3</td><td>UK</td><td>F</td><td>DEACTIVATED</td><td>0</td></tr>
+<tr><td>67</td><td>AU</td><td>O</td><td>INACTIVE</td><td>0</td></tr>
+<tr><td>51</td><td>US</td><td>F</td><td>BLOCKED</td><td>0</td></tr>
+<tr><td>35</td><td>IN</td><td>M</td><td>ACTIVE</td><td>0</td></tr>
+<tr><td>99</td><td>DE</td><td>O</td><td>BLOCKED</td><td>0</td></tr>
+<tr><td>19</td><td>US</td><td>F</td><td>DEACTIVATED</td><td>0</td></tr>
+<tr><td>83</td><td>GE</td><td>M</td><td>BLOCKED</td><td>0</td></tr>
+<tr><td>4</td><td>RU</td><td>N</td><td>ACTIVE</td><td>0</td></tr>
+<tr><td>68</td><td>JP</td><td>N</td><td>BLOCKED</td><td>0</td></tr>
+<tr><td>52</td><td>AF</td><td>O</td><td>ACTIVE</td><td>0</td></tr>
+<tr><td>36</td><td>AF</td><td>M</td><td>ACTIVE</td><td>0</td></tr>
+<tr><td>100</td><td>GE</td><td>O</td><td>ACTIVE</td><td>0</td></tr>
+<tr><td>20</td><td>UK</td><td>F</td><td>INACTIVE</td><td>0</td></tr>
+<tr><td>84</td><td>GE</td><td>N</td><td>BLOCKED</td><td>0</td></tr>
+<tr><td>5</td><td>AF</td><td>O</td><td>BLOCKED</td><td>0</td></tr>
+<tr><td>69</td><td>DE</td><td>O</td><td>DEACTIVATED</td><td>0</td></tr>
+<tr><td>53</td><td>GE</td><td>M</td><td>INACTIVE</td><td>0</td></tr>
+<tr><td>37</td><td>GE</td><td>N</td><td>BLOCKED</td><td>0</td></tr>
+<tr><td>21</td><td>US</td><td>F</td><td>ACTIVE</td><td>0</td></tr>
+<tr><td>85</td><td>DE</td><td>F</td><td>BLOCKED</td><td>0</td></tr>
+<tr><td>86</td><td>GE</td><td>M</td><td>DEACTIVATED</td><td>0</td></tr>
+<tr><td>6</td><td>AF</td><td>O</td><td>ACTIVE</td><td>0</td></tr>
+<tr><td>70</td><td>AU</td><td>O</td><td>INACTIVE</td><td>0</td></tr>
+<tr><td>54</td><td>UK</td><td>N</td><td>INACTIVE</td><td>0</td></tr>
+<tr><td>38</td><td>AF</td><td>N</td><td>ACTIVE</td><td>0</td></tr>
+<tr><td>22</td><td>AU</td><td>M</td><td>BLOCKED</td><td>0</td></tr>
+<tr><td>23</td><td>DE</td><td>N</td><td>INACTIVE</td><td>0</td></tr>
+<tr><td>87</td><td>DE</td><td>O</td><td>ACTIVE</td><td>0</td></tr>
+<tr><td>7</td><td>GE</td><td>M</td><td>BLOCKED</td><td>0</td></tr>
+<tr><td>71</td><td>UK</td><td>F</td><td>DEACTIVATED</td><td>0</td></tr>
+<tr><td>55</td><td>US</td><td>F</td><td>INACTIVE</td><td>0</td></tr>
+<tr><td>39</td><td>DE</td><td>M</td><td>ACTIVE</td><td>0</td></tr>
+<tr><td>24</td><td>FR</td><td>N</td><td>BLOCKED</td><td>0</td></tr>
+<tr><td>88</td><td>FR</td><td>F</td><td>BLOCKED</td><td>0</td></tr>
+<tr><td>8</td><td>AU</td><td>F</td><td>INACTIVE</td><td>0</td></tr>
+<tr><td>72</td><td>FR</td><td>F</td><td>ACTIVE</td><td>0</td></tr>
+<tr><td>56</td><td>GE</td><td>F</td><td>INACTIVE</td><td>0</td></tr>
+<tr><td>40</td><td>JP</td><td>N</td><td>DEACTIVATED</td><td>0</td></tr>
+<tr><td>25</td><td>GE</td><td>O</td><td>DEACTIVATED</td><td>0</td></tr>
+<tr><td>89</td><td>AU</td><td>F</td><td>ACTIVE</td><td>0</td></tr>
+<tr><td>9</td><td>IN</td><td>F</td><td>ACTIVE</td><td>0</td></tr>
+<tr><td>73</td><td>JP</td><td>M</td><td>DEACTIVATED</td><td>0</td></tr>
+<tr><td>57</td><td>AU</td><td>M</td><td>BLOCKED</td><td>0</td></tr>
+<tr><td>41</td><td>IN</td><td>F</td><td>DEACTIVATED</td><td>0</td></tr>
+<tr><td>26</td><td>UK</td><td>F</td><td>INACTIVE</td><td>0</td></tr>
+<tr><td>90</td><td>AF</td><td>M</td><td>INACTIVE</td><td>0</td></tr>
+<tr><td>10</td><td>IN</td><td>N</td><td>BLOCKED</td><td>0</td></tr>
+<tr><td>74</td><td>US</td><td>O</td><td>INACTIVE</td><td>0</td></tr>
+<tr><td>58</td><td>AU</td><td>M</td><td>DEACTIVATED</td><td>0</td></tr>
+<tr><td>42</td><td>JP</td><td>F</td><td>BLOCKED</td><td>0</td></tr>
+<tr><td>27</td><td>DE</td><td>F</td><td>DEACTIVATED</td><td>0</td></tr>
+<tr><td>91</td><td>UK</td><td>M</td><td>BLOCKED</td><td>0</td></tr>
+<tr><td>11</td><td>US</td><td>O</td><td>ACTIVE</td><td>0</td></tr>
+<tr><td>75</td><td>UK</td><td>F</td><td>INACTIVE</td><td>0</td></tr>
+<tr><td>59</td><td>US</td><td>O</td><td>ACTIVE</td><td>0</td></tr>
+<tr><td>43</td><td>AU</td><td>N</td><td>BLOCKED</td><td>0</td></tr>
+<tr><td>44</td><td>RU</td><td>M</td><td>BLOCKED</td><td>0</td></tr>
+<tr><td>28</td><td>JP</td><td>M</td><td>BLOCKED</td><td>0</td></tr>
+<tr><td>92</td><td>AF</td><td>F</td><td>ACTIVE</td><td>0</td></tr>
+<tr><td>12</td><td>JP</td><td>O</td><td>DEACTIVATED</td><td>0</td></tr>
+<tr><td>76</td><td>RU</td><td>N</td><td>BLOCKED</td><td>0</td></tr>
+<tr><td>60</td><td>UK</td><td>M</td><td>INACTIVE</td><td>0</td></tr>
+<tr><td>45</td><td>GE</td><td>M</td><td>BLOCKED</td><td>0</td></tr>
+<tr><td>29</td><td>AF</td><td>N</td><td>BLOCKED</td><td>0</td></tr>
+<tr><td>93</td><td>AF</td><td>O</td><td>BLOCKED</td><td>0</td></tr>
+<tr><td>13</td><td>US</td><td>F</td><td>BLOCKED</td><td>0</td></tr>
+<tr><td>77</td><td>US</td><td>N</td><td>DEACTIVATED</td><td>0</td></tr>
+<tr><td>61</td><td>RU</td><td>M</td><td>DEACTIVATED</td><td>0</td></tr>
+<tr><td>46</td><td>FR</td><td>O</td><td>ACTIVE</td><td>0</td></tr>
+<tr><td>30</td><td>AF</td><td>O</td><td>BLOCKED</td><td>0</td></tr>
+<tr><td>94</td><td>UK</td><td>O</td><td>DEACTIVATED</td><td>0</td></tr>
+<tr><td>14</td><td>IN</td><td>F</td><td>BLOCKED</td><td>0</td></tr>
+<tr><td>78</td><td>JP</td><td>M</td><td>INACTIVE</td><td>0</td></tr>
+<tr><td>62</td><td>IN</td><td>M</td><td>ACTIVE</td><td>0</td></tr>
+<tr><td>47</td><td>US</td><td>M</td><td>BLOCKED</td><td>0</td></tr>
+<tr><td>31</td><td>AF</td><td>N</td><td>DEACTIVATED</td><td>0</td></tr>
+<tr><td>95</td><td>RU</td><td>N</td><td>ACTIVE</td><td>0</td></tr>
+<tr><td>15</td><td>JP</td><td>O</td><td>DEACTIVATED</td><td>0</td></tr>
+<tr><td>79</td><td>UK</td><td>F</td><td>INACTIVE</td><td>0</td></tr>
+<tr><td>63</td><td>DE</td><td>N</td><td>DEACTIVATED</td><td>0</td></tr>
+</tbody></table>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q41_completeness_score_distribution">
+          <div class="query-header">
+            <span class="query-id">Q41_completeness_score_distribution</span>
+            <span class="query-title">Distribution of Profile Completeness Scores</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">1 row(s) returned</div>
+            <table><thead><tr><th>completeness_score</th><th>customer_count</th></tr></thead><tbody><tr><td>0</td><td>100</td></tr>
+</tbody></table>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q42_crud_flag_distribution">
+          <div class="query-header">
+            <span class="query-id">Q42_crud_flag_distribution</span>
+            <span class="query-title">CRUD Flag Distribution in Customer Detail</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">1 row(s) returned</div>
+            <table><thead><tr><th>crud_flag</th><th>count</th></tr></thead><tbody><tr><td>C</td><td>100</td></tr>
+</tbody></table>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q43_monthly_address_records">
+          <div class="query-header">
+            <span class="query-id">Q43_monthly_address_records</span>
+            <span class="query-title">Monthly Address Records Added (Last 3 Years)</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">0 row(s) returned</div>
+            <p class="no-data">No data returned for this query.</p>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q44_contact_expiring_90_days">
+          <div class="query-header">
+            <span class="query-id">Q44_contact_expiring_90_days</span>
+            <span class="query-title">Contact Records Expiring Within 90 Days</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">0 row(s) returned</div>
+            <p class="no-data">No data returned for this query.</p>
+          </div>
+        </div>
+        
+        <div class="query-section" id="Q45_proof_of_id_expiring_90_days">
+          <div class="query-header">
+            <span class="query-id">Q45_proof_of_id_expiring_90_days</span>
+            <span class="query-title">Proof of ID Records Expiring Within 90 Days</span>
+          </div>
+          <div class="query-body">
+            <div class="row-count">0 row(s) returned</div>
+            <p class="no-data">No data returned for this query.</p>
+          </div>
+        </div>
+        
+
+  </main>
+</div>
+
+<div class="report-footer">
+  Customer Analytics Report &nbsp;|&nbsp; 2026-04-17 18:58:00
+</div>
+</body>
+</html>

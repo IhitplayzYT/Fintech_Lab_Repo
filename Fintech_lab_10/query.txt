@@ -1,0 +1,3 @@
+{
+  "query": "INSERT INTO customer_detail (customer_gender, customer_type, customer_dob, customer_lang, customer_status, customer_country, crud_flag) VALUES ('M','VIP','2000-01-01','EN','ACTIVE','IN','C')"
+}
